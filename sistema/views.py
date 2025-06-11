@@ -1,30 +1,54 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Articulo, Empleado, Inventario
 
 # Create your views here.
 
 def login_view(request):
-    return render(request, 'login.html')
     # Lógica: validar usuario y contraseña, redirigir según rol
+    if request.method == 'POST':
+        dui = request.POST.get('dui')
+        contrasenia = request.POST.get('contrasenia')
+
+        try:
+            empleado = Empleado.objects.get(dui=dui, contrasenia=contrasenia)
+            request.session['empleado_id'] = empleado.id_empleado
+
+            if empleado.rol == 'admin':
+                return redirect('panel_admin')
+            elif empleado.rol == 'operador':
+                return redirect('inventario_operador')
+        except Empleado.DoesNotExist:
+            return render(request, 'login.html', {'error': 'Credenciales incorrectas'})
+
+    return render(request, 'login.html')
+
+def logout_view(request): 
+    #lógica para cerrar sesión
+    request.session.flush()
+    return redirect('login')
+
 
 def inventario_operador(request):
     # Lógica: mostrar tabla del inventario + botón “extraer artículo”
-    # Esto es solo temporal, para simular que el operador con ID 1 está logueado
-    operador = Empleado.objects.get(id_empleado=2)
+    empleado_id = request.session.get('empleado_id')  # Obtener el usuario logueado
 
-    # Buscamos su buque asignado
+    if not empleado_id:
+        return redirect('login')  # No está logueado, lo mandamos a login
+
+    operador = Empleado.objects.get(id_empleado=empleado_id)
+
+    if operador.rol != 'operador':
+        return redirect('login')  # No tiene el rol correcto, lo bloqueamos
+
     buque = operador.buque_asignado
 
-    # Obtenemos el inventario de ese buque
     try:
         inventario = Inventario.objects.get(buque=buque)
         articulos = Articulo.objects.filter(inventario=inventario)
     except Inventario.DoesNotExist:
         articulos = []
 
-    return render(request, 'inventario_operador.html', {
-        'articulos': articulos
-    })
+    return render(request, 'inventario_operador.html', {'articulos': articulos})
 
 def panel_admin(request):
     return render(request, 'panel_admin.html')
