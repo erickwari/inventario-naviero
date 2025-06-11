@@ -8,4 +8,5 @@ urlpatterns = [
     path('panel-admin/', views.panel_admin, name='panel_admin'),
     path('registro/', views.registro, name='registro'),
     path('eliminar/', views.confirmar_eliminacion, name='confirmar_eliminacion'),
+    path('extraer/', views.extraer_articulo, name='extraer_articulo'),
 ]

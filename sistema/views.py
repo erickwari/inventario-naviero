@@ -50,6 +50,34 @@ def inventario_operador(request):
 
     return render(request, 'inventario_operador.html', {'articulos': articulos})
 
+from django.contrib import messages
+from django.shortcuts import redirect
+
+def extraer_articulo(request):
+    #esta vista es para cuando el operador quiera extraer un artículo
+    if request.method == 'POST':
+        empleado_id = request.session.get('empleado_id')
+        if not empleado_id:
+            return redirect('login')
+
+        id_articulo = request.POST.get('id_articulo')
+        cantidad = request.POST.get('cantidad')
+
+        try:
+            cantidad= int(cantidad)
+            articulo = Articulo.objects.get(id_articulo=id_articulo)
+
+            if articulo.cantidad >= cantidad:
+                articulo.cantidad -= cantidad
+                articulo.save()
+                messages.success(request, f"Se extrajeron {cantidad} unidades de {articulo.nombre}.")
+            else:
+                messages.error(request, "No hay suficientes unidades disponibles.")
+        except (Articulo.DoesNotExist, ValueError):
+            messages.error(request, "Ocurrió un error al procesar la solicitud.")
+
+        return redirect('inventario_operador')
+
 def panel_admin(request):
     return render(request, 'panel_admin.html')
     # Lógica:
