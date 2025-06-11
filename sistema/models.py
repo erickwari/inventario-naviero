@@ -19,6 +19,14 @@ class Empleado(models.Model):
     salario = models.DecimalField(max_digits=10, decimal_places=2)
     contrasenia = models.CharField(max_length=128)
     rol = models.CharField(max_length=15, choices=ROLES)
+    #solo si es operador
+    buque_asignado = models.ForeignKey(
+        'Buque',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        limit_choices_to={'inventario__operador__isnull': False},  # opcional, para filtrar buques ocupados
+    )
 
     def __str__(self):
         return f'{self.nombre} {self.apellido} ({self.rol})'
