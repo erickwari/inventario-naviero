@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import Articulo
 
 # Create your views here.
 
@@ -7,7 +8,8 @@ def login_view(request):
     # Lógica: validar usuario y contraseña, redirigir según rol
 
 def inventario_operador(request):
-    return render(request, 'inventario_operador.html')
+    articulos = Articulo.objects.all()
+    return render(request, 'inventario_operador.html', {'articulos': articulos})
     # Lógica: mostrar tabla del inventario + botón “extraer artículo”
 
 def panel_admin(request):

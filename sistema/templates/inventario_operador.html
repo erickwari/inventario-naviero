@@ -1,1 +1,40 @@
-<h1>Estoy en la pantalla del operador</h1>
+<h2>Inventario del operador</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Disponibilidad</th>
+            <th>Fecha de caducidad</th>
+            <th>Categoría</th>
+            <th>Imagen</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for articulo in articulos %}
+            <tr>
+                <td>{{ articulo.id_articulo }}</td>
+                <td>{{ articulo.nombre }}</td>
+                <td>{{ articulo.cantidad }}</td>
+                <td>
+                    {% if articulo.fecha_caducidad %}
+                        {{ articulo.fecha_caducidad|date:"d/m/Y" }}
+                    {% else %}
+                        No aplica
+                    {% endif %}
+                </td>
+                <td>{{ articulo.get_categoria_display }}</td>
+                <td>
+                    {% if articulo.imagen %}
+                        <img src="{{ articulo.imagen.url }}" width="80" height="80" alt="Imagen del artículo">
+                    {% else %}
+                        Sin imagen
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6">No hay artículos disponibles.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
