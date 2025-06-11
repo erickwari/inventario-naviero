@@ -3,13 +3,22 @@ from django.db import models
 # Create your models here.
 
 class Empleado(models.Model):
+
+    ADMIN = 'admin'
+    OPERADOR = 'operador'
+
+    ROLES = [
+        (ADMIN, 'Administrador'),
+        (OPERADOR, 'Operador'),
+    ]
+
     id_empleado = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=25)
     apellido = models.CharField(max_length=25)
     dui = models.CharField(max_length=10, unique=True)
     salario = models.DecimalField(max_digits=10, decimal_places=2)
     contrasenia = models.CharField(max_length=128)
-    rol = models.CharField(max_length=5, choices=[('ADMIN', 'Administrador'), ('OPER', 'Operador')])
+    rol = models.CharField(max_length=15, choices=ROLES)
 
     def __str__(self):
         return f'{self.nombre} {self.apellido} ({self.rol})'
@@ -56,17 +65,16 @@ class Articulo(models.Model):
 
 class Servicio(models.Model):
     id_servicio = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=25)
+    nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     fecha_de_realizacion = models.DateField()
     costo = models.DecimalField(max_digits=10, decimal_places=2)
     imagen = models.ImageField(upload_to='servicios/', blank=True, null=True)
     # Relaciones
     buque = models.ForeignKey('Buque', null=True, blank=True, on_delete=models.SET_NULL)
-    empleado = models.ForeignKey('Empleado', null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.nombre
     
-    
+
 
