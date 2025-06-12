@@ -90,10 +90,19 @@
         <p>No se encontraron registros.</p>
     {% endif %}
 {% endif %}
-<form id="formReabastecer" method="get" onsubmit="return irAReabastecer();">
-    <input type="hidden" id="id_articulo_reabastecer" name="id_articulo">
-    <button type="submit" id="btnReabastecer" disabled>Reabastecer artículo</button>
-</form>
+<div>
+    <form id="formReabastecer" method="get" onsubmit="return irAReabastecer();">
+        <input type="hidden" id="id_articulo_reabastecer" name="id_articulo">
+        <button type="submit" id="btnReabastecer" disabled>Reabastecer artículo</button>
+    </form>
+</div>
+
+<div>
+    <form id="formEliminar" method="get" onsubmit="return irAEliminar();">
+        <input type="hidden" id="id_articulo_eliminar" name="id_articulo">
+        <button type="submit" id="btnEliminar" disabled>Eliminar artículo</button>
+    </form>
+</div>
 
 {% if mostrar == 'servicios' %}
     <h3>Servicios del buque</h3>
@@ -151,6 +160,10 @@
         // Activar el botón y pasar el id al input oculto
         document.getElementById('btnReabastecer').disabled = false;
         document.getElementById('id_articulo_reabastecer').value = idArticulo;
+
+        // botón eliminar activado
+        document.getElementById('btnEliminar').disabled = false;
+        document.getElementById('id_articulo_eliminar').value = idArticulo;
     }
 
     function irAReabastecer() {
@@ -160,6 +173,17 @@
         window.location.href = `/reabastecer/${id}/`;
         return false; // evitamos envío real del form
     }
+
+    function irAEliminar() {
+    const id = document.getElementById('id_articulo_reabastecer').value;
+    if (!id) return false;
+
+    // También seteamos en el otro input por si es necesario
+    document.getElementById('id_articulo_eliminar').value = id;
+    window.location.href = `/eliminar/${id}/`;
+    return false;
+}
+
 </script>
 
 <a href="{% url 'logout' %}">Cerrar sesión</a>

@@ -8,6 +8,6 @@ urlpatterns = [
     path('panel-admin/', views.panel_admin, name='panel_admin'),
     path('reabastecer/<int:id_articulo>/', views.reabastecer_articulo, name='reabastecer_articulo'),
     path('registro/', views.registro, name='registro'),
-    path('eliminar/', views.confirmar_eliminacion, name='confirmar_eliminacion'),
+    path('eliminar/<int:id_articulo>/', views.eliminar_articulo, name='eliminar_articulo'),
     path('extraer/', views.extraer_articulo, name='extraer_articulo'),
 ]

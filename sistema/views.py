@@ -196,6 +196,14 @@ def registro(request):
     # - Validar campos (campos vacíos, fechas, cantidad)
     # - Mostrar alerta de éxito o error
 
-def confirmar_eliminacion(request):
-    return render(request, 'confirmar_eliminacion.html')
-    # Lógica: alerta de confirmación antes de eliminar artículo
+def eliminar_articulo(request, id_articulo):
+    articulo = get_object_or_404(Articulo, id_articulo=id_articulo)
+
+    if request.method == 'POST':
+        articulo.delete()
+        messages.success(request, f"Artículo '{articulo.nombre}' eliminado correctamente.")
+        return redirect('panel_admin')
+
+    return render(request, 'confirmar_eliminacion.html', {
+        'articulo': articulo
+    })
