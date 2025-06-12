@@ -18,6 +18,26 @@
 <br>
 
 {% if mostrar == 'inventario' %}
+    <form method="get" action="{% url 'panel_admin' %}">
+        <input type="hidden" name="buque" value="{{ numero_buque }}">
+        <input type="hidden" name="mostrar" value="inventario">
+
+        <label for="nombre">Filtrar por nombre:</label>
+        <input type="text" id="nombre" name="nombre" value="{{ nombre_filtro }}">
+
+        <label for="categoria">Categoría:</label>
+        <select name="categoria" id="categoria">
+            <option value="">-- Todas --</option>
+            <option value="PRO" {% if categoria_filtro == 'PRO' %}selected{% endif %}>Provisiones</option>
+            <option value="REP" {% if categoria_filtro == 'REP' %}selected{% endif %}>Repuestos</option>
+            <option value="LIM" {% if categoria_filtro == 'LIM' %}selected{% endif %}>Limpieza y Aseo</option>
+            <option value="SEG" {% if categoria_filtro == 'SEG' %}selected{% endif %}>Seguridad</option>
+            <option value="SUM" {% if categoria_filtro == 'SUM' %}selected{% endif %}>Suministros Generales</option>
+        </select>
+
+        <button type="submit">Aplicar filtros</button>
+    </form>
+
     {% if articulos %}
         <table border="1" style="width: 100%;">
             <thead>
@@ -56,7 +76,7 @@
             </tbody>
         </table>
     {% else %}
-        <p>No hay inventario disponible para este buque.</p>
+        <p>No se encontraron registros.</p>
     {% endif %}
 {% endif %}
 

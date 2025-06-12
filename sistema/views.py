@@ -102,6 +102,8 @@ def panel_admin(request):
     # Obtener el número de buque seleccionado desde GET (por ejemplo: ?buque=2)
     numero_buque = request.GET.get('buque')
     mostrar = request.GET.get('mostrar', 'inventario')
+    nombre_filtro = ''
+    categoria_filtro = ''
 
     buque = None
     inventario = None
@@ -115,6 +117,18 @@ def panel_admin(request):
             if mostrar == 'inventario':
                 inventario = Inventario.objects.get(buque=buque)
                 articulos = Articulo.objects.filter(inventario=inventario)
+                nombre_filtro = request.GET.get('nombre', '')
+                categoria_filtro = request.GET.get('categoria', '')
+
+                if inventario:
+                    articulos = Articulo.objects.filter(inventario=inventario)
+
+                    if nombre_filtro:
+                        articulos = articulos.filter(nombre__icontains=nombre_filtro)
+
+                    if categoria_filtro:
+                        articulos = articulos.filter(categoria=categoria_filtro)
+
             elif mostrar == 'servicios':
                 servicios = Servicio.objects.filter(buque=buque)
 
@@ -131,6 +145,8 @@ def panel_admin(request):
         'numero_buque': numero_buque,
         'mostrar': mostrar,
         'cantidad_buques': buques.count(),
+        'nombre_filtro': nombre_filtro,
+        'categoria_filtro': categoria_filtro,
     })
 
 def registro(request):
