@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Articulo, Empleado, Inventario, Buque
+from .models import Articulo, Empleado, Inventario, Buque, Servicio
 
 # Create your views here.
 
@@ -101,25 +101,35 @@ def panel_admin(request):
 
     # Obtener el número de buque seleccionado desde GET (por ejemplo: ?buque=2)
     numero_buque = request.GET.get('buque')
+    mostrar = request.GET.get('mostrar', 'inventario')
+
     buque = None
     inventario = None
     articulos = []
+    servicios = []
 
     if numero_buque:
         try:
             buque = Buque.objects.get(numero_buque=numero_buque)
-            inventario = Inventario.objects.get(buque=buque)
-            articulos = Articulo.objects.filter(inventario=inventario)
+
+            if mostrar == 'inventario':
+                inventario = Inventario.objects.get(buque=buque)
+                articulos = Articulo.objects.filter(inventario=inventario)
+            elif mostrar == 'servicios':
+                servicios = Servicio.objects.filter(buque=buque)
+
         except (Buque.DoesNotExist, Inventario.DoesNotExist):
             articulos = []
+            servicios = []
 
-    # Para mostrar el número de buques disponibles en total
     buques = Buque.objects.all()
 
     return render(request, 'panel_admin.html', {
         'articulos': articulos,
+        'servicios': servicios,
         'buques': buques,
         'numero_buque': numero_buque,
+        'mostrar': mostrar,
         'cantidad_buques': buques.count(),
     })
 
