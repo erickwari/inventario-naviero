@@ -38,6 +38,17 @@
         <button type="submit">Aplicar filtros</button>
     </form>
 
+{% if mostrar == 'inventario' and articulos_sin_stock %}
+    <div style="background-color: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin: 15px 0; color: #856404; border-radius: 5px;">
+        <strong>⚠ Atención:</strong>
+        <ul>
+            {% for articulo in articulos_sin_stock %}
+                <li>El artículo <strong>{{ articulo.nombre }}</strong> está agotado (0 unidades). Considere reabastecerlo.</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
     {% if articulos %}
         <table border="1" style="width: 100%;">
             <thead>

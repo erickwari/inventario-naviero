@@ -104,6 +104,7 @@ def panel_admin(request):
     mostrar = request.GET.get('mostrar', 'inventario')
     nombre_filtro = ''
     categoria_filtro = ''
+    articulos_sin_stock = ''
 
     buque = None
     inventario = None
@@ -129,6 +130,9 @@ def panel_admin(request):
                     if categoria_filtro:
                         articulos = articulos.filter(categoria=categoria_filtro)
 
+                    articulos_sin_stock = articulos.filter(cantidad=0)
+
+
             elif mostrar == 'servicios':
                 servicios = Servicio.objects.filter(buque=buque)
 
@@ -147,6 +151,7 @@ def panel_admin(request):
         'cantidad_buques': buques.count(),
         'nombre_filtro': nombre_filtro,
         'categoria_filtro': categoria_filtro,
+        'articulos_sin_stock': articulos_sin_stock,
     })
 
 def registro(request):
