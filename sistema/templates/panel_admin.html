@@ -1,1 +1,56 @@
-<h1>Estoy en la pantalla del admin</h1>
+<h2>Inventario del buque</h2>
+
+<form method="get" action="{% url 'panel_admin' %}">
+    <label for="selector_buque">Número de buque:</label>
+    <input type="number" id="selector_buque" name="buque"
+       min="1"
+       max="{{ cantidad_buques }}"
+       value="{{ numero_buque|default:1 }}"
+       required>
+    <button type="submit">Mostrar</button>
+</form>
+
+<br>
+
+{% if articulos %}
+    <table border="1" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Disponibilidad</th>
+                <th>Fecha de caducidad</th>
+                <th>Categoría</th>
+                <th>Imagen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for articulo in articulos %}
+                <tr>
+                    <td>{{ articulo.id_articulo }}</td>
+                    <td>{{ articulo.nombre }}</td>
+                    <td>{{ articulo.cantidad }}</td>
+                    <td>
+                        {% if articulo.fecha_caducidad %}
+                            {{ articulo.fecha_caducidad|date:"d/m/Y" }}
+                        {% else %}
+                            No aplica
+                        {% endif %}
+                    </td>
+                    <td>{{ articulo.get_categoria_display }}</td>
+                    <td>
+                        {% if articulo.imagen %}
+                            <img src="{{ articulo.imagen.url }}" width="60" height="60">
+                        {% else %}
+                            Sin imagen
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No hay inventario disponible para este buque.</p>
+{% endif %}
+
+<a href="{% url 'logout' %}">Cerrar sesión</a>

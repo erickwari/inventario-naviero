@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Articulo, Empleado, Inventario
+from .models import Articulo, Empleado, Inventario, Buque
 
 # Create your views here.
 
@@ -85,12 +85,43 @@ def extraer_articulo(request):
         return redirect('inventario_operador')
 
 def panel_admin(request):
-    return render(request, 'panel_admin.html')
     # Lógica:
     # - Mostrar inventario del buque seleccionado
     # - Mostrar servicios si se pulsa “mostrar servicios”
     # - Filtros de búsqueda
     # - Botón “reabastecer”
+
+    empleado_id = request.session.get('empleado_id')
+    if not empleado_id:
+        return redirect('login')
+
+    empleado = Empleado.objects.get(id_empleado=empleado_id)
+    if empleado.rol != 'admin':
+        return redirect('login')
+
+    # Obtener el número de buque seleccionado desde GET (por ejemplo: ?buque=2)
+    numero_buque = request.GET.get('buque')
+    buque = None
+    inventario = None
+    articulos = []
+
+    if numero_buque:
+        try:
+            buque = Buque.objects.get(numero_buque=numero_buque)
+            inventario = Inventario.objects.get(buque=buque)
+            articulos = Articulo.objects.filter(inventario=inventario)
+        except (Buque.DoesNotExist, Inventario.DoesNotExist):
+            articulos = []
+
+    # Para mostrar el número de buques disponibles en total
+    buques = Buque.objects.all()
+
+    return render(request, 'panel_admin.html', {
+        'articulos': articulos,
+        'buques': buques,
+        'numero_buque': numero_buque,
+        'cantidad_buques': buques.count(),
+    })
 
 def registro(request):
     return render(request, 'registro.html')
