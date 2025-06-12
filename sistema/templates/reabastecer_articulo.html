@@ -1,0 +1,32 @@
+<h2>Reabastecer artículo</h2>
+
+<p><strong>{{ articulo.nombre }}</strong> (Stock actual: {{ articulo.cantidad }})</p>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <div>
+        <label for="cantidad">Cantidad a agregar:</label><br>
+        <input type="number" name="cantidad" id="cantidad" required min="1">
+    </div>
+
+    <div>
+        <label for="fecha_caducidad">Nueva fecha de caducidad (si aplica):</label><br>
+        <input type="date" name="fecha_caducidad" id="fecha_caducidad" min="{{ hoy }}">
+    </div>
+
+    <div>
+    <button type="submit" style="margin-top: 10px;">Reabastecer</button>
+    </div>
+
+</form>
+
+<a href="{% url 'panel_admin' %}">Volver al panel</a>
+
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}

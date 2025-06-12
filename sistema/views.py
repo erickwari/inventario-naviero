@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Articulo, Empleado, Inventario, Buque, Servicio
+from datetime import datetime
 
 # Create your views here.
 
@@ -152,6 +153,39 @@ def panel_admin(request):
         'nombre_filtro': nombre_filtro,
         'categoria_filtro': categoria_filtro,
         'articulos_sin_stock': articulos_sin_stock,
+    })
+
+def reabastecer_articulo(request, id_articulo):
+    articulo = get_object_or_404(Articulo, id_articulo=id_articulo)
+
+    if request.method == 'POST':
+        try:
+            cantidad_agregada = int(request.POST.get('cantidad'))
+            if cantidad_agregada <= 0:
+                raise ValueError("Cantidad inválida")
+
+            # Aumentar cantidad
+            articulo.cantidad += cantidad_agregada
+
+            # Actualizar fecha de caducidad si aplica
+
+            fecha_input = request.POST.get('fecha_caducidad')
+            if fecha_input:
+                fecha_dt = datetime.strptime(fecha_input, '%Y-%m-%d').date()
+                if fecha_dt < datetime.now().date():
+                    raise ValueError("La fecha de caducidad no puede ser anterior a hoy.")
+                articulo.fecha_caducidad = fecha_dt
+
+            articulo.save()
+            messages.success(request, f"Se reabastecieron {cantidad_agregada} unidades de '{articulo.nombre}'.")
+            return redirect('panel_admin')
+
+        except:
+            messages.error(request, "Datos inválidos. Intente nuevamente.")
+
+    return render(request, 'reabastecer_articulo.html', {
+        'articulo': articulo,
+        'hoy': datetime.now().date().isoformat()
     })
 
 def registro(request):
