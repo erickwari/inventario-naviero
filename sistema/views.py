@@ -65,6 +65,8 @@ def extraer_articulo(request):
 
         try:
             cantidad= int(cantidad)
+            if cantidad <= 0:
+                raise ValueError
             articulo = Articulo.objects.get(id_articulo=id_articulo)
 
             if articulo.cantidad >= cantidad:
@@ -75,6 +77,10 @@ def extraer_articulo(request):
                 messages.error(request, "No hay suficientes unidades disponibles.")
         except (Articulo.DoesNotExist, ValueError):
             messages.error(request, "Ocurrió un error al procesar la solicitud.")
+        except (ValueError, TypeError):
+            messages.error(request, "Cantidad inválida. Debe ser un número entero positivo.")
+            return redirect('inventario_operador')
+
 
         return redirect('inventario_operador')
 
