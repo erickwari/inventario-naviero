@@ -50,42 +50,44 @@
 {% endif %}
 
     {% if articulos %}
-        <table border="1" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Disponibilidad</th>
-                    <th>Fecha de caducidad</th>
-                    <th>Categoría</th>
-                    <th>Imagen</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for articulo in articulos %}
-                    <tr onclick="seleccionarFila(this)" data-id="{{ articulo.id_articulo }}">
-                        <td>{{ articulo.id_articulo }}</td>
-                        <td>{{ articulo.nombre }}</td>
-                        <td>{{ articulo.cantidad }}</td>
-                        <td>
-                            {% if articulo.fecha_caducidad %}
-                                {{ articulo.fecha_caducidad|date:"d/m/Y" }}
-                            {% else %}
-                                No aplica
-                            {% endif %}
-                        </td>
-                        <td>{{ articulo.get_categoria_display }}</td>
-                        <td>
-                            {% if articulo.imagen %}
-                                <img src="{{ articulo.imagen.url }}" width="60" height="60">
-                            {% else %}
-                                Sin imagen
-                            {% endif %}
-                        </td>
+        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc;">
+            <table border="1" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Disponibilidad</th>
+                        <th>Fecha de caducidad</th>
+                        <th>Categoría</th>
+                        <th>Imagen</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table><br>
+                </thead>
+                <tbody>
+                    {% for articulo in articulos %}
+                        <tr onclick="seleccionarFila(this)" data-id="{{ articulo.id_articulo }}">
+                            <td>{{ articulo.id_articulo }}</td>
+                            <td>{{ articulo.nombre }}</td>
+                            <td>{{ articulo.cantidad }}</td>
+                            <td>
+                                {% if articulo.fecha_caducidad %}
+                                    {{ articulo.fecha_caducidad|date:"d/m/Y" }}
+                                {% else %}
+                                    No aplica
+                                {% endif %}
+                            </td>
+                            <td>{{ articulo.get_categoria_display }}</td>
+                            <td>
+                                {% if articulo.imagen %}
+                                    <img src="{{ articulo.imagen.url }}" width="60" height="60">
+                                {% else %}
+                                    Sin imagen
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table><br>
+        </div>
     {% else %}
         <p>No se encontraron registros.</p>
     {% endif %}
@@ -114,36 +116,38 @@
 {% if mostrar == 'servicios' %}
     <h3>Servicios del buque</h3>
     {% if servicios %}
-        <table border="1" style="width: 100%;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Fecha de realización</th>
-                    <th>Costo</th>
-                    <th>Imagen</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for servicio in servicios %}
+        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ccc;">
+            <table border="1" style="width: 100%;">
+                <thead>
                     <tr>
-                        <td>{{ servicio.id_servicio }}</td>
-                        <td>{{ servicio.nombre }}</td>
-                        <td>{{ servicio.descripcion }}</td>
-                        <td>{{ servicio.fecha_de_realizacion|date:"d/m/Y" }}</td>
-                        <td>${{ servicio.costo }}</td>
-                        <td>
-                            {% if servicio.imagen %}
-                                <img src="{{ servicio.imagen.url }}" width="60" height="60">
-                            {% else %}
-                                Sin imagen
-                            {% endif %}
-                        </td>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Fecha de realización</th>
+                        <th>Costo</th>
+                        <th>Imagen</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table><br>
+                </thead>
+                <tbody>
+                    {% for servicio in servicios %}
+                        <tr>
+                            <td>{{ servicio.id_servicio }}</td>
+                            <td>{{ servicio.nombre }}</td>
+                            <td>{{ servicio.descripcion }}</td>
+                            <td>{{ servicio.fecha_de_realizacion|date:"d/m/Y" }}</td>
+                            <td>${{ servicio.costo }}</td>
+                            <td>
+                                {% if servicio.imagen %}
+                                    <img src="{{ servicio.imagen.url }}" width="60" height="60">
+                                {% else %}
+                                    Sin imagen
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table><br>
+        </div>    
     {% else %}
         <p>No hay servicios registrados para este buque.</p>
     {% endif %}
