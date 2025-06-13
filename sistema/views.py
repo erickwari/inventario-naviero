@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Articulo, Empleado, Inventario, Buque, Servicio
 from datetime import datetime
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -189,12 +190,97 @@ def reabastecer_articulo(request, id_articulo):
     })
 
 def registro(request):
-    return render(request, 'registro.html')
     # Lógica:
     # - Radio buttons: seleccionar artículo o servicio
     # - Mostrar campos según selección
     # - Validar campos (campos vacíos, fechas, cantidad)
     # - Mostrar alerta de éxito o error
+
+    tipo = request.GET.get('tipo', 'articulo')  # por defecto muestra artículo
+
+    mensaje = None
+    error = None
+
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')
+
+        if tipo == 'articulo':
+            nombre = request.POST.get('nombre')
+            categoria = request.POST.get('categoria')
+            cantidad = request.POST.get('cantidad')
+            fecha_input = request.POST.get('fecha_caducidad')
+            fecha_caducidad = None
+
+            if fecha_input:
+                fecha_dt = datetime.strptime(fecha_input, '%Y-%m-%d').date()
+                if fecha_dt < datetime.now().date():
+                    raise ValueError("La fecha de caducidad no puede ser anterior a hoy.")
+                fecha_caducidad = fecha_dt
+            imagen = request.FILES.get('imagen')
+
+            try:
+                cantidad = int(cantidad)
+                if cantidad < 0:
+                    raise ValueError("Cantidad negativa")
+
+                articulo = Articulo(
+                    nombre=nombre,
+                    categoria=categoria,
+                    cantidad=cantidad,
+                    fecha_caducidad=fecha_caducidad,
+                    imagen=imagen,
+                    inventario = Inventario.objects.get(buque__numero_buque=request.POST.get('buque_id'))
+                )
+                articulo.full_clean()
+                articulo.save()
+                mensaje = "Artículo registrado con éxito."
+            except Exception as e:
+                error = "Error al registrar artículo: " + str(e)
+
+        elif tipo == 'servicio':
+            nombre = request.POST.get('nombre')
+            descripcion = request.POST.get('descripcion')
+            costo = request.POST.get('costo')
+            imagen = request.FILES.get('imagen')
+            fecha_input = request.POST.get('fecha_realizacion')
+            fecha_realizacion = None
+
+            if fecha_input:
+                fecha_dt = datetime.strptime(fecha_input, '%Y-%m-%d').date()
+                if fecha_dt < datetime.now().date():
+                    raise ValueError("La fecha de realización no puede ser anterior a hoy.")
+                fecha_realizacion = fecha_dt
+
+
+            try:
+                costo = float(costo)
+                if costo < 0:
+                    raise ValueError("Costo negativo")
+
+                servicio = Servicio(
+                    nombre=nombre,
+                    descripcion=descripcion,
+                    fecha_de_realizacion=fecha_realizacion,
+                    costo=costo,
+                    imagen=imagen,
+                    buque = Buque.objects.get(numero_buque=request.POST.get('buque_id'))
+                )
+                servicio.full_clean()
+                servicio.save()
+                mensaje = "Servicio registrado con éxito."
+            except Exception as e:
+                error = "Error al registrar servicio: " + str(e)
+
+    buques = Buque.objects.all()
+
+    return render(request, 'registro.html', {
+        'tipo': tipo,
+        'mensaje': mensaje,
+        'error': error,
+        'buques': buques,
+        'hoy': datetime.now().date().isoformat()
+    })
+
 
 def eliminar_articulo(request, id_articulo):
     articulo = get_object_or_404(Articulo, id_articulo=id_articulo)

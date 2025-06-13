@@ -1,1 +1,84 @@
-<h1>Estoy en la pantalla de registro</h1>
+<h2>Registrar nuevo {{ tipo }}</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <label>
+        <input type="radio" name="tipo" value="articulo" {% if tipo == 'articulo' %}checked{% endif %} onchange="window.location.href='?tipo=' + this.value;">
+        Artículo
+    </label>
+    <label>
+        <input type="radio" name="tipo" value="servicio" {% if tipo == 'servicio' %}checked{% endif %} onchange="window.location.href='?tipo=' + this.value;">
+        Servicio
+    </label>
+
+    <br><br>
+
+    {% if tipo == 'articulo' %}
+
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" required><br><br>
+
+        <label>Categoría:</label><br>
+        <select name="categoria" required>
+            <option value="">-- Seleccionar --</option>
+            <option value="PRO">Provisiones</option>
+            <option value="REP">Repuestos</option>
+            <option value="LIM">Limpieza y Aseo</option>
+            <option value="SEG">Seguridad</option>
+            <option value="SUM">Suministros Generales</option>
+        </select><br><br>
+
+        <label>Cantidad:</label><br>
+        <input type="number" name="cantidad" min="0" required><br><br>
+
+        <label>Fecha de caducidad (si aplica):</label><br>
+        <input type="date" name="fecha_caducidad" min="{{ hoy }}"><br><br>
+
+        <label>Imagen:</label><br>
+        <input type="file" name="imagen"><br><br>
+
+        <label>Buque destino:</label><br>
+        <select name="buque_id" required>
+            {% for buque in buques %}
+                <option value="{{ buque.numero_buque }}">Buque {{ buque.numero_buque }}</option>
+            {% endfor %}
+        </select><br><br>
+
+    {% elif tipo == 'servicio' %}
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" required><br><br>
+
+        <label>Descripción:</label><br><br>
+        <textarea name="descripcion" required></textarea><br><br>
+
+        <label>Fecha de realización:</label><br>
+        <input type="date" name="fecha_realizacion" min="{{ hoy }}" required><br><br>
+
+        <label>Costo:</label><br>
+        <input type="number" name="costo" min="0" step="0.01" required><br><br>
+
+        <label>Imagen (opcional):</label><br>
+        <input type="file" name="imagen"><br><br>
+
+        <label>Buque destino:</label><br>
+        <select name="buque_id" required>
+            {% for buque in buques %}
+                <option value="{{ buque.numero_buque }}">Buque {{ buque.numero_buque }}</option>
+            {% endfor %}
+        </select><br><br>
+
+    {% endif %}
+
+    <br>
+    <button type="submit">Registrar</button>
+</form>
+
+{% if mensaje %}
+    <p style="color: green;">{{ mensaje }}</p>
+{% endif %}
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<a href="{% url 'panel_admin' %}">Volver al panel</a>
